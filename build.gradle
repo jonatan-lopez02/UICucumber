@@ -1,0 +1,37 @@
+plugins {
+    id 'java'
+}
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.0'
+    testImplementation group: 'junit', name: 'junit', version: '4.13'
+    testImplementation group: 'io.cucumber', name: 'cucumber-core', version: '6.8.0'
+    testImplementation group: 'io.cucumber', name: 'cucumber-java', version: '6.8.0'
+    testImplementation group: 'io.cucumber', name: 'cucumber-junit', version: '6.8.0'
+    compile group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '2.53.0'
+}
+
+configurations {
+    cucumberRuntime {
+        extendsFrom testImplementation
+    }
+}
+task cucumber() {
+    dependsOn assemble, testClasses
+    doLast {
+        javaexec {
+            main = "io.cucumber.core.cli.Main"
+            classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
+            args = ['--plugin', 'pretty', 'src/test/resources']
+        }
+    }
+}
+
+
